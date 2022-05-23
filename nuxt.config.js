@@ -7,7 +7,7 @@ export default {
   target: 'static',
 
   router: {
-    base: 'IRRValueConverter'
+    base: '/IRRValueConverter/'
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
