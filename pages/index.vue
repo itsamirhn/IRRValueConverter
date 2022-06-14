@@ -20,6 +20,7 @@
         <v-col>
           <v-date-picker
             v-model="date"
+            :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, 10)"
             locale="fa-IR"
             first-day-of-week="6"
             aria-label="Date"
@@ -33,10 +34,21 @@
 <script>
 export default {
   name: 'IndexPage',
+  async asyncData({ $axios }) {
+    let usdPrices = {}
+    if (process.server) {
+      usdPrices = JSON.parse(require('fs').readFileSync('../static/usd.json', 'utf8'))
+    } else {
+      usdPrices = await $axios.get('/usd.json').then(res => res.data)
+    }
+
+    return { usdPrices }
+  },
   data () {
     return {
       amount: '',
-      date: ''
+      date: '',
+      usdPrices: {},
     }
   }
 }
