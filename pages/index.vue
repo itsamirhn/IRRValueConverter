@@ -91,7 +91,6 @@ export default {
       isValidForm: false,
       isLoading: false,
       dialog: false,
-      dialogText: '',
       amount: '',
       convertedAmount: '',
       date: '',
@@ -116,10 +115,15 @@ export default {
   methods: {
     calculate () {
       this.isLoading = true
-      const number = Number(Number(this.toEnglishDigits(this.amount)) * this.usdPrices[this.availableDates[0]]['sell'] / this.usdPrices[this.date]['sell']).toFixed(0)
-      this.convertedAmount = number.toString()
-      this.isLoading = false
-      this.dialog = true
+      this.fetchLiveUSDPrice().then((liveUSDPrice) => {
+        const number = Number(Number(this.toEnglishDigits(this.amount)) * liveUSDPrice['sell'] / this.usdPrices[this.date]['sell']).toFixed(0)
+        this.convertedAmount = number.toString()
+        this.isLoading = false
+        this.dialog = true
+      }).then((err) => {
+        this.isLoading = false
+        console.log(err)
+      })
     },
     allowedDates (a) {
       return this.availableDates.includes(a);
@@ -130,7 +134,11 @@ export default {
       return p2e(a2e(str))
     },
     currency (amount) {
-      return Number(amount).toLocaleString('fa')
+      return Number(this.toEnglishDigits(amount)).toLocaleString('fa')
+    },
+    fetchLiveUSDPrice() {
+      const request = this.$axios.get(process.env.usd_api)
+      return request.then(res => res.data['usd'])
     }
   }
 }
