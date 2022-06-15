@@ -88,7 +88,13 @@
       <li>
         قیمت دلار از کجا میاد؟
         <span class="grey--text">
-          از دیتا ذخیره شده‌ی <span style="font-weight: bolder">رایگان</span> روزهای گذشته سایت <a href="https://bonbast.com">بن‌بست</a>
+          از دیتا ذخیره شده‌ی <span style="font-weight: bolder">رایگان</span> روزهای گذشته سایت <a href="https://bonbast.com">بن‌بست</a>.
+        </span>
+      </li>
+      <li>
+        چرا بعضی تاریخ‌ها غیرفعالن؟
+        <span class="grey--text">
+          چون دیتایی از قیمت دلار اون روز‌ها به صورت آزاد در دسترس نیست.
         </span>
       </li>
       <li>
@@ -100,7 +106,7 @@
       <li>
         کد سایت اوپن‌سورسه؟
         <span class="grey--text">
-          اره از این <a href="https://github.com/itsamirhn/IRRValueConverter">لینک</a> میتونی کد‌هاشو ببینی
+          اره از این <a href="https://github.com/itsamirhn/IRRValueConverter">لینک</a> میتونی کد‌هاشو ببینی.
         </span>
       </li>
     </ul>
@@ -125,8 +131,8 @@ export default {
       convertedAmount: '',
       date: '',
       textFieldRules: [
-        v => !!v || 'قیمت را وارد کنید',
-        v => /^\d+$/.test(this.toEnglishDigits(v)) || 'قیمت باید عددی باشد'
+        v => !!v || 'قیمت رو وارد کن',
+        v => /^\d+$/.test(this.toEnglishDigits(v)) || 'قیمت باید عددی باشه'
       ],
       yesterdayDateString: moment().subtract(1, 'days').format('YYYY-MM-DD'),
     }
