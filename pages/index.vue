@@ -87,7 +87,7 @@ export default {
   components: {
     VuePersianDatetimePicker
   },
-  async asyncData({ $axios }) {
+  async asyncData() {
     return { usdPrices }
   },
   data () {
