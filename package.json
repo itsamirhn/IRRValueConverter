@@ -11,9 +11,12 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
     "core-js": "^3.19.3",
+    "moment": "^2.29.3",
+    "moment-jalaali": "^0.9.6",
     "nuxt": "^2.15.8",
     "vazirmatn": "^32.102.0",
     "vue": "^2.6.14",
+    "vue-persian-datetime-picker": "^2.10.4",
     "vue-server-renderer": "^2.6.14",
     "vue-template-compiler": "^2.6.14",
     "vuetify": "^2.6.1",

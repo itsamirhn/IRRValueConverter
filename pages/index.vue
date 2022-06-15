@@ -18,16 +18,18 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-date-picker
+          <vue-persian-datetime-picker
             v-model="date"
-            full-width
-            :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, 10)"
-            :min="(new Date(availableDates[0])).toISOString().slice(0, 10)"
-            :allowed-dates="allowedDates"
-            locale="fa-IR"
-            first-day-of-week="6"
-            aria-label="Date"
-          ></v-date-picker>
+            :showNowBtn="false"
+            :convertNumbers="true"
+            inputFormat="YYYY-MM-DD"
+            displayFormat="jYYYY-jMM-jDD"
+            placeholder="تاریخ قیمت مثلا ۱۳۹۰/۱۰/۲۱"
+            :min="availableDates[0]"
+            :max="availableDates[availableDates.length - 1]"
+            :disable="disabledDates"
+          >
+          </vue-persian-datetime-picker>
         </v-col>
       </v-row>
       <v-row>
@@ -57,11 +59,11 @@
           </span>
           تو تاریخ
           <span>
-            {{ new Date(date).toLocaleDateString('fa') }}
+            {{ toPersianDigits(jalaaliToDate(this.date).format('dddd jMMMM jYYYY')) }}
           </span>
           یعنی حدودا
           <span style="font-weight: bold">
-            {{ $moment(date, "YYYY-MM-DD").fromNow().toLocaleString() }}
+            {{ toPersianDigits(jalaaliToDate(this.date).fromNow()) }}
           </span>
           معادل
           <span style="font-weight: bolder">
@@ -76,10 +78,15 @@
 </template>
 
 <script>
+import moment from 'moment-jalaali';
+import VuePersianDatetimePicker from 'vue-persian-datetime-picker';
 import usdPrices from '~/data/usd.json'
 
 export default {
   name: 'IndexPage',
+  components: {
+    VuePersianDatetimePicker
+  },
   async asyncData({ $axios }) {
     return { usdPrices }
   },
@@ -112,7 +119,7 @@ export default {
     calculate () {
       this.isLoading = true
       this.fetchLiveUSDPrice().then((liveUSDPrice) => {
-        const number = Number(Number(this.toEnglishDigits(this.amount)) * liveUSDPrice['sell'] / this.usdPrices[this.date]['sell']).toFixed(0)
+        const number = Number(Number(this.toEnglishDigits(this.amount)) * liveUSDPrice['sell'] / this.usdPrices[this.jalaaliToGregorian(this.date)]['sell']).toFixed(0)
         this.convertedAmount = number.toString()
         this.isLoading = false
         this.dialog = true
@@ -121,13 +128,23 @@ export default {
         console.log(err)
       })
     },
-    allowedDates (a) {
-      return this.availableDates.includes(a);
+    jalaaliToDate(jalaaliStr) {
+      return moment(jalaaliStr, 'jYYYY/jMM/jDD')
+    },
+    jalaaliToGregorian(jalaaliStr) {
+      return this.jalaaliToDate(jalaaliStr).format('YYYY-MM-DD')
+    },
+    disabledDates (a) {
+      return !this.availableDates.includes(this.jalaaliToGregorian(a));
     },
     toEnglishDigits (str) {
       const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
       const a2e = s => s.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
       return p2e(a2e(str))
+    },
+    toPersianDigits(str) {
+      const e2p = s => s.replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d])
+      return e2p(str)
     },
     currency (amount) {
       return Number(this.toEnglishDigits(amount)).toLocaleString('fa')
