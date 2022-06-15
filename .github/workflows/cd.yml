@@ -1,6 +1,9 @@
 name: cd
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   cd:
@@ -25,6 +28,9 @@ jobs:
 
       - name: Generate
         run: yarn generate
+        env:
+          USD_API_URL: ${{ secrets.USD_API_URL }}
+
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
