@@ -33,7 +33,7 @@ export default {
   ],
 
   env: {
-    usd_api: process.env.USD_API_URL
+    usd_api: 'http://bonbast-api.herokuapp.com/archive'
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -89,10 +89,5 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    extend (config, ctx) {
-      config.node = {
-        fs: "empty"
-      };
-    }
   }
 }
