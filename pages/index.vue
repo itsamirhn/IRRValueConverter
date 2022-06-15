@@ -75,16 +75,12 @@
 </template>
 
 <script>
+import oldUSDPrices from 'static/old.json'
+
 export default {
   name: 'IndexPage',
   async asyncData({ $axios }) {
-    let usdPrices = {}
-    if (process.server) {
-      usdPrices = JSON.parse(require('fs').readFileSync('../static/usd.json', 'utf8'))
-    } else {
-      usdPrices = await $axios.get('/usd.json').then(res => res.data)
-    }
-    return { usdPrices }
+    return { oldUSDPrices }
   },
   data () {
     return {
@@ -94,7 +90,7 @@ export default {
       amount: '',
       convertedAmount: '',
       date: '',
-      usdPrices: {},
+      oldUSDPrices,
       textFieldRules: [
         v => !!v || 'قیمت را وارد کنید',
         v => /^\d+$/.test(this.toEnglishDigits(v)) || 'قیمت باید عددی باشد'
@@ -104,7 +100,7 @@ export default {
   computed: {
     availableDates() {
       let allowedDates = []
-      for (let date in this.usdPrices) {
+      for (let date in this.oldUSDPrices) {
         allowedDates.push(date)
       }
       allowedDates.sort()
@@ -116,7 +112,7 @@ export default {
     calculate () {
       this.isLoading = true
       this.fetchLiveUSDPrice().then((liveUSDPrice) => {
-        const number = Number(Number(this.toEnglishDigits(this.amount)) * liveUSDPrice['sell'] / this.usdPrices[this.date]['sell']).toFixed(0)
+        const number = Number(Number(this.toEnglishDigits(this.amount)) * liveUSDPrice['sell'] / this.oldUSDPrices[this.date]['sell']).toFixed(0)
         this.convertedAmount = number.toString()
         this.isLoading = false
         this.dialog = true
