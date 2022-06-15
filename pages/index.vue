@@ -24,7 +24,7 @@
             displayFormat="jYYYY/jMM/jDD"
             placeholder="تاریخ قیمت قدیم مثلا ۱۳۹۰/۱۰/۲۱"
             min="2012-10-12"
-            :max="new Date(Date.now() - 24 * 60 * 60 * 1000)"
+            :max="yesterdayDateString"
             style="width: 100%"
           >
           </vue-persian-datetime-picker>
@@ -127,7 +127,8 @@ export default {
       textFieldRules: [
         v => !!v || 'قیمت را وارد کنید',
         v => /^\d+$/.test(this.toEnglishDigits(v)) || 'قیمت باید عددی باشد'
-      ]
+      ],
+      yesterdayDateString: moment().subtract(1, 'days').format('YYYY-MM-DD'),
     }
   },
   methods: {
