@@ -23,9 +23,8 @@
             inputFormat="YYYY-MM-DD"
             displayFormat="jYYYY-jMM-jDD"
             placeholder="تاریخ قیمت مثلا ۱۳۹۰/۱۰/۲۱"
-            :min="availableDates[0]"
-            :max="availableDates[availableDates.length - 1]"
-            :disable="disabledDates"
+            min="2012-10-12"
+            :max="new Date(Date.now() - 24 * 60 * 60 * 1000)"
             style="width: 100%"
           >
           </vue-persian-datetime-picker>
@@ -78,15 +77,11 @@
 <script>
 import moment from 'moment-jalaali';
 import VuePersianDatetimePicker from 'vue-persian-datetime-picker';
-import usdPrices from '~/data/usd.json'
 
 export default {
   name: 'IndexPage',
   components: {
-    VuePersianDatetimePicker
-  },
-  async asyncData() {
-    return { usdPrices }
+    VuePersianDatetimePicker,
   },
   data () {
     return {
@@ -96,32 +91,22 @@ export default {
       amount: '',
       convertedAmount: '',
       date: '',
-      usdPrices,
       textFieldRules: [
         v => !!v || 'قیمت را وارد کنید',
         v => /^\d+$/.test(this.toEnglishDigits(v)) || 'قیمت باید عددی باشد'
       ]
     }
   },
-  computed: {
-    availableDates() {
-      let allowedDates = []
-      for (let date in this.usdPrices) {
-        allowedDates.push(date)
-      }
-      allowedDates.sort()
-      return allowedDates
-    }
-  },
   methods: {
     calculate () {
       this.isLoading = true
-      this.fetchLiveUSDPrice().then((liveUSDPrice) => {
-        const number = Number(Number(this.toEnglishDigits(this.amount)) * liveUSDPrice['sell'] / this.usdPrices[this.jalaaliToGregorian(this.date)]['sell']).toFixed(0)
+      this.fetchUSDPrice(this.jalaaliToGregorian(this.date)).then(async (oldPrice) => {
+        const newPrice = await this.fetchLiveUSDPrice()
+        const number = Number(Number(this.toEnglishDigits(this.amount)) * newPrice / oldPrice).toFixed(0)
         this.convertedAmount = number.toString()
         this.isLoading = false
         this.dialog = true
-      }).then((err) => {
+      }).catch((err) => {
         this.isLoading = false
         console.log(err)
       })
@@ -131,9 +116,6 @@ export default {
     },
     jalaaliToGregorian(jalaaliStr) {
       return this.jalaaliToDate(jalaaliStr).format('YYYY-MM-DD')
-    },
-    disabledDates (a) {
-      return !this.availableDates.includes(this.jalaaliToGregorian(a));
     },
     toEnglishDigits (str) {
       const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
@@ -149,7 +131,15 @@ export default {
     },
     fetchLiveUSDPrice() {
       const request = this.$axios.get(process.env.usd_api)
-      return request.then(res => res.data['usd'])
+      return request.then(res => res.data['usd']['sell'])
+    },
+    fetchUSDPrice(date) {
+      const request = this.$axios.get(process.env.usd_api, {
+        params: {
+          date: date
+        }
+      })
+      return request.then(res => res.data['usd']['sell'])
     }
   }
 }
