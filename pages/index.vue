@@ -7,13 +7,13 @@
     </v-row>
     <v-row>
       <v-col>
-        <p>با این سایت میتونین قیمت  هرچیزی در هر چند وقت گذشته رو به ارزش الانش تبدیل کنین :))</p>
+        <p>با این سایت میتونین قیمت  هرچیزی در هر چند وقت گذشته رو به ارزش الانش تبدیل کنین!</p>
       </v-col>
     </v-row>
     <v-form @submit.prevent v-model="isValidForm">
       <v-row>
         <v-col cols="12" lg="6">
-          <v-text-field v-model="amount" label="قیمت به تومان" aria-label="Amount" required :rules="textFieldRules"/>
+          <v-text-field v-model="amount" label="قیمت قدیم به ریال" aria-label="Amount" required :rules="textFieldRules"/>
         </v-col>
         <v-col cols="12" lg="6" style="display: flex; align-items: center">
           <vue-persian-datetime-picker
@@ -21,8 +21,8 @@
             :showNowBtn="false"
             :convertNumbers="true"
             inputFormat="YYYY-MM-DD"
-            displayFormat="jYYYY-jMM-jDD"
-            placeholder="تاریخ قیمت مثلا ۱۳۹۰/۱۰/۲۱"
+            displayFormat="jYYYY/jMM/jDD"
+            placeholder="تاریخ قیمت قدیم مثلا ۱۳۹۰/۱۰/۲۱"
             min="2012-10-12"
             :max="new Date(Date.now() - 24 * 60 * 60 * 1000)"
             style="width: 100%"
@@ -36,6 +36,7 @@
             color="light-green"
             class="white--text"
             x-large
+            block
             :disabled="date === '' || (!isValidForm)"
             :loading="isLoading"
             @click="calculate">
@@ -52,11 +53,11 @@
         <v-container>
           <p class="mt-3" style="font-size: x-large">
           <span style="font-weight: bold">
-            {{ currency(amount) }} تومن
+            {{ currency(amount) }} ریال
           </span>
           تو تاریخ
           <span>
-            {{ toPersianDigits(jalaaliToDate(this.date).format('dddd jMMMM jYYYY')) }}
+            {{ toPersianDigits(jalaaliToDate(this.date).format('jDD jMMMM jYYYY')) }}
           </span>
           یعنی حدودا
           <span style="font-weight: bold">
@@ -64,13 +65,45 @@
           </span>
           معادل
           <span style="font-weight: bolder">
-            {{ currency(convertedAmount) }} تومن
+            {{ currency(convertedAmount) }} ریال
           </span>
           امروزه !
         </p>
         </v-container>
       </v-card>
     </v-dialog>
+    <ul class="text-right mt-5" style="line-height: 1.9em">
+      <li>
+        این سایت چجوری کار میکنه؟
+        <span class="grey--text">
+          با مقایسه قیمت دلار!
+        </span>
+      </li>
+      <li>
+        یعنی محاسبه‌اش دقیق دقیق نیست؟
+        <span class="grey--text">
+          نه نیست ولی تقریبی چیز خوبی حساب میکنه...
+        </span>
+      </li>
+      <li>
+        قیمت دلار از کجا میاد؟
+        <span class="grey--text">
+          از دیتا ذخیره شده‌ی <span style="font-weight: bolder">رایگان</span> روزهای گذشته سایت <a href="https://bonbast.com">بن‌بست</a>
+        </span>
+      </li>
+      <li>
+        هدف این سایت چیه؟
+        <span class="grey--text">
+          هیچ هدف خاصی نداره و صرفا از جهت  فان ساخته شده تا سال‌هایی که سپری کردیم رو بهتر یادمون بیاد :))
+        </span>
+      </li>
+      <li>
+        کد سایت اوپن‌سورسه؟
+        <span class="grey--text">
+          اره از این <a href="https://github.com/itsamirhn/IRRValueConverter">لینک</a> میتونی کد‌هاشو ببینی
+        </span>
+      </li>
+    </ul>
   </v-container>
 </template>
 

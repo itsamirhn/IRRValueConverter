@@ -6,7 +6,7 @@
       </v-container>
     </v-main>
     <v-footer>
-      <span>ساخته شده در ایران</span>
+      <span>ساخته شده توسط: <a href="https://github.com/itsamirhn">@itsamirhn</a></span>
     </v-footer>
   </v-app>
 </template>
