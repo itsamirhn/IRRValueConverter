@@ -12,12 +12,10 @@
     </v-row>
     <v-form @submit.prevent v-model="isValidForm">
       <v-row>
-        <v-col>
+        <v-col cols="12" lg="6">
           <v-text-field v-model="amount" label="قیمت به تومان" aria-label="Amount" required :rules="textFieldRules"/>
         </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
+        <v-col cols="12" lg="6" style="display: flex; align-items: center">
           <vue-persian-datetime-picker
             v-model="date"
             :showNowBtn="false"
@@ -28,6 +26,7 @@
             :min="availableDates[0]"
             :max="availableDates[availableDates.length - 1]"
             :disable="disabledDates"
+            style="width: 100%"
           >
           </vue-persian-datetime-picker>
         </v-col>
@@ -38,7 +37,6 @@
             color="light-green"
             class="white--text"
             x-large
-            block
             :disabled="date === '' || (!isValidForm)"
             :loading="isLoading"
             @click="calculate">
