@@ -22,6 +22,7 @@
             v-model="date"
             full-width
             :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, 10)"
+            :min="(new Date(availableDates[0])).toISOString().slice(0, 10)"
             :allowed-dates="allowedDates"
             locale="fa-IR"
             first-day-of-week="6"
@@ -75,12 +76,12 @@
 </template>
 
 <script>
-import oldUSDPrices from 'static/old.json'
+import usdPrices from '~/data/usd.json'
 
 export default {
   name: 'IndexPage',
   async asyncData({ $axios }) {
-    return { oldUSDPrices }
+    return { usdPrices }
   },
   data () {
     return {
@@ -90,7 +91,7 @@ export default {
       amount: '',
       convertedAmount: '',
       date: '',
-      oldUSDPrices,
+      usdPrices,
       textFieldRules: [
         v => !!v || 'قیمت را وارد کنید',
         v => /^\d+$/.test(this.toEnglishDigits(v)) || 'قیمت باید عددی باشد'
@@ -100,11 +101,10 @@ export default {
   computed: {
     availableDates() {
       let allowedDates = []
-      for (let date in this.oldUSDPrices) {
+      for (let date in this.usdPrices) {
         allowedDates.push(date)
       }
       allowedDates.sort()
-      allowedDates.reverse()
       return allowedDates
     }
   },
@@ -112,7 +112,7 @@ export default {
     calculate () {
       this.isLoading = true
       this.fetchLiveUSDPrice().then((liveUSDPrice) => {
-        const number = Number(Number(this.toEnglishDigits(this.amount)) * liveUSDPrice['sell'] / this.oldUSDPrices[this.date]['sell']).toFixed(0)
+        const number = Number(Number(this.toEnglishDigits(this.amount)) * liveUSDPrice['sell'] / this.usdPrices[this.date]['sell']).toFixed(0)
         this.convertedAmount = number.toString()
         this.isLoading = false
         this.dialog = true
