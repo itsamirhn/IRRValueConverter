@@ -43,11 +43,18 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    '@nuxtjs/moment',
   ],
+
+  moment: {
+    defaultLocale: 'fa',
+    locales: ['fa'],
+    defaultTimezone: 'Asia/Tehran'
+  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
   ],
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
