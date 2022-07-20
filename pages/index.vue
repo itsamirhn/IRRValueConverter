@@ -13,7 +13,22 @@
     <v-form @submit.prevent v-model="isValidForm">
       <v-row>
         <v-col cols="12" lg="6">
-          <v-text-field v-model="amount" label="قیمت قدیم به ریال" aria-label="Amount" required :rules="textFieldRules"/>
+          <CurrencyInput
+            v-model="amount"
+            :rules="textFieldRules"
+            :options=
+              '{
+                "locale": "fa-IR",
+                "currency": "IRR",
+                "currencyDisplay": "symbol",
+                "hideCurrencySymbolOnFocus": false,
+                "hideGroupingSeparatorOnFocus": false,
+                "hideNegligibleDecimalDigitsOnFocus": false,
+                "autoDecimalDigits": false,
+                "useGrouping": true,
+                "accountingSign": false
+             }'
+          />
         </v-col>
         <v-col cols="12" lg="6" style="display: flex; align-items: center">
           <vue-persian-datetime-picker
@@ -116,23 +131,24 @@
 <script>
 import moment from 'moment-jalaali';
 import VuePersianDatetimePicker from 'vue-persian-datetime-picker';
+import CurrencyInput from "@/components/CurrencyInput";
 
 export default {
   name: 'IndexPage',
   components: {
     VuePersianDatetimePicker,
+    CurrencyInput
   },
   data () {
     return {
       isValidForm: false,
       isLoading: false,
       dialog: false,
-      amount: '',
+      amount: null,
       convertedAmount: '',
       date: '',
       textFieldRules: [
         v => !!v || 'قیمت رو وارد کن',
-        v => /^\d+$/.test(this.toEnglishDigits(v)) || 'قیمت باید عددی باشه'
       ],
       yesterdayDateString: moment().subtract(1, 'days').format('YYYY-MM-DD'),
     }
@@ -142,7 +158,7 @@ export default {
       this.isLoading = true
       this.fetchUSDPrice(this.jalaaliToGregorian(this.date)).then(async (oldPrice) => {
         const newPrice = await this.fetchLiveUSDPrice()
-        const number = Number(Number(this.toEnglishDigits(this.amount)) * newPrice / oldPrice).toFixed(0)
+        const number = Number(Number(this.amount) * newPrice / oldPrice).toFixed(0)
         this.convertedAmount = number.toString()
         this.isLoading = false
         this.dialog = true
@@ -157,17 +173,12 @@ export default {
     jalaaliToGregorian(jalaaliStr) {
       return this.jalaaliToDate(jalaaliStr).format('YYYY-MM-DD')
     },
-    toEnglishDigits (str) {
-      const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
-      const a2e = s => s.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
-      return p2e(a2e(str))
-    },
     toPersianDigits(str) {
       const e2p = s => s.replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d])
       return e2p(str)
     },
     currency (amount) {
-      return Number(this.toEnglishDigits(amount)).toLocaleString('fa')
+      return Number(amount).toLocaleString('fa')
     },
     fetchLiveUSDPrice() {
       const request = this.$axios.get(process.env.usd_api)
