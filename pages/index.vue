@@ -1,5 +1,26 @@
 <template>
   <v-container class="text-center">
+    <v-snackbar
+      v-model="snackbar"
+      top
+      color="red"
+      elevation="24"
+      multi-line
+    >
+      <v-layout align-center>
+        <v-icon right>
+          mdi-alert-circle
+        </v-icon>
+        <v-layout column>
+          <div style="font-weight: bold; font-size: larger">
+            خطا!
+          </div>
+          <div class="mt-1">
+            {{ snackbarText }}
+          </div>
+        </v-layout>
+      </v-layout>
+    </v-snackbar>
     <v-row>
       <v-col>
         <h1>تبدیل ارزش ریال 🇮🇷</h1>
@@ -37,7 +58,7 @@
             :convertNumbers="true"
             inputFormat="YYYY-MM-DD"
             displayFormat="jYYYY/jMM/jDD"
-            placeholder="تاریخ قیمت قدیم مثلا ۱۳۹۰/۱۰/۲۱"
+            placeholder="تاریخ قیمت قدیم مثلا ۱۳۹۳/۱۰/۲۱"
             min="2012-10-12"
             :max="yesterdayDateString"
             style="width: 100%"
@@ -66,17 +87,17 @@
     >
       <v-card>
         <v-container>
-          <p class="mt-3" style="font-size: x-large">
+          <p class="mt-3" style="font-size: x-large; text-align: center">
           <span style="font-weight: bold">
             {{ currency(amount) }} ریال
           </span>
           تو تاریخ
           <span>
-            {{ toPersianDigits(jalaaliToDate(this.date).format('jDD jMMMM jYYYY')) }}
+            {{ toPersianDigits(jalaaliToDate(this.date).format('jDD jMMMM jYYYY')) }}،
           </span>
-          یعنی حدودا
+          یعنی حدوداً
           <span style="font-weight: bold">
-            {{ toPersianDigits(jalaaliToDate(this.date).fromNow()) }}
+            {{ toPersianDigits(jalaaliToDate(this.date).fromNow()) }}،
           </span>
           معادل
           <span style="font-weight: bolder">
@@ -91,13 +112,13 @@
       <li>
         این سایت چجوری کار میکنه؟
         <span class="grey--text">
-          با مقایسه قیمت دلار!
+          با مقایسه قیمت <span style="font-weight: bolder">دلار</span>!
         </span>
       </li>
       <li>
         یعنی محاسبه‌اش دقیق دقیق نیست؟
         <span class="grey--text">
-          نه نیست ولی تقریبی چیز خوبی حساب میکنه...
+          نه نیست چون فاکتور‌های زیادی لحاظ نمیشه و صرفا یه مقایسه نسبی ساده‌ست.
         </span>
       </li>
       <li>
@@ -121,7 +142,13 @@
       <li>
         کد سایت اوپن‌سورسه؟
         <span class="grey--text">
-          اره از این <a href="https://github.com/itsamirhn/IRRValueConverter">لینک</a> میتونی کد‌هاشو ببینی.
+          اره از این <a href="https://github.com/itsamirhn/IRRValueConverter">لینک</a> میتونی کد‌هاشو ببینی و خوشحال میشم یه <span style="font-weight: bolder">Star ⭐️</span> بدی!
+        </span>
+      </li>
+      <li>
+         چرا باید از فیلترشکن استفاده کرد؟
+        <span class="grey--text">
+          چون برای سرور‌ این وبسایت از سرویس‌های رایگان خارجی استفاده شده و برای دور زدن تحریم‌های این سرویس باید از این روش استفاده کرد.
         </span>
       </li>
     </ul>
@@ -141,6 +168,8 @@ export default {
   },
   data () {
     return {
+      snackbar: false,
+      snackbarText: 'هیچی!',
       isValidForm: false,
       isLoading: false,
       dialog: false,
@@ -156,16 +185,13 @@ export default {
   methods: {
     calculate () {
       this.isLoading = true
-      this.fetchUSDPrice(this.jalaaliToGregorian(this.date)).then(async (oldPrice) => {
+      this.fetchArchiveUSDPrice(this.jalaaliToGregorian(this.date)).then(async (oldPrice) => {
         const newPrice = await this.fetchLiveUSDPrice()
         const number = Number(Number(this.amount) * newPrice / oldPrice).toFixed(0)
         this.convertedAmount = number.toString()
         this.isLoading = false
         this.dialog = true
-      }).catch((err) => {
-        this.isLoading = false
-        console.log(err)
-      })
+      }).catch(() => this.isLoading = false)
     },
     jalaaliToDate(jalaaliStr) {
       return moment(jalaaliStr, 'jYYYY/jMM/jDD')
@@ -181,16 +207,28 @@ export default {
       return Number(amount).toLocaleString('fa')
     },
     fetchLiveUSDPrice() {
-      const request = this.$axios.get(process.env.usd_api)
+      const request = this.fetch(process.env.live_usd_api)
       return request.then(res => res.data['usd']['sell'])
     },
-    fetchUSDPrice(date) {
-      const request = this.$axios.get(process.env.usd_api, {
+    fetchArchiveUSDPrice(date) {
+      const request = this.fetch(process.env.archive_usd_api, {
+        timeout: 5000,
         params: {
           date: date
         }
       })
       return request.then(res => res.data['usd']['sell'])
+    },
+    fetch(path, config) {
+      return this.$axios.get(path, config).catch((reason) => {
+        if (reason.code === 'ECONNABORTED') {
+          this.snackbarText = 'به دلیل تحریم‌ها، لطفا از وی‌پی‌ان استفاده کن.'
+          this.snackbar = true
+        } else {
+          this.snackbarText = 'یه مشکلی پیش اومد. لطفا دوباره تلاش کن.'
+          this.snackbar = true
+        }
+      })
     }
   }
 }

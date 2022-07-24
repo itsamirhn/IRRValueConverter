@@ -33,12 +33,13 @@ export default {
   ],
 
   env: {
-    usd_api: 'https://bonbast-api.herokuapp.com/archive/'
+    archive_usd_api: 'https://bonbast-api.herokuapp.com/archive/',
+    live_usd_api: 'https://bonbast-api.herokuapp.com/latest'
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '~/plugins/moment-jalaali.js' },
+    { src: '~/plugins/moment-jalaali.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -47,12 +48,12 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
+    '@nuxtjs/vuetify'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    '@nuxtjs/axios',
+    '@nuxtjs/axios'
   ],
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
