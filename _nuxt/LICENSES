@@ -15,13 +15,6 @@
 //! moment.js locale configuration
 
 
-/**
- * Vue Currency Input 2.4.0
- * (c) 2018-2022 Matthias Stiller
- * @license MIT
- */
-
-
 /*!
   * vue-router v3.5.4
   * (c) 2022 Evan You
@@ -32,4 +25,11 @@
  * Vue.js v2.7.8
  * (c) 2014-2022 Evan You
  * Released under the MIT License.
+ */
+
+
+/**
+ * Vue Currency Input 2.4.0
+ * (c) 2018-2022 Matthias Stiller
+ * @license MIT
  */
