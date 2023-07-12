@@ -33,8 +33,8 @@ export default {
   ],
 
   env: {
-    archive_usd_api: 'https://bonbast-api.deta.dev/archive/',
-    live_usd_api: 'https://bonbast-api.deta.dev/latest'
+    archive_usd_api: 'https://bonbast.amirhn.com/archive/',
+    live_usd_api: 'https://bonbast.amirhn.com/latest'
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
