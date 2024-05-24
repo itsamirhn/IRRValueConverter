@@ -1,3 +1,10 @@
+/**
+ * Vue Currency Input 2.4.0
+ * (c) 2018-2022 Matthias Stiller
+ * @license MIT
+ */
+
+
 /*!
  * vue-client-only v0.0.0-semantic-release
  * (c) 2021-present egoist <0x142857@gmail.com>
@@ -16,20 +23,7 @@
 
 
 /*!
-  * vue-router v3.5.4
-  * (c) 2022 Evan You
-  * @license MIT
-  */
-
-/*!
- * Vue.js v2.7.8
- * (c) 2014-2022 Evan You
+ * Vue.js v2.7.16
+ * (c) 2014-2023 Evan You
  * Released under the MIT License.
- */
-
-
-/**
- * Vue Currency Input 2.4.0
- * (c) 2018-2022 Matthias Stiller
- * @license MIT
  */
